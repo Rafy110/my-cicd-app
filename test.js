@@ -5,7 +5,7 @@ function runSimpleTest() {
     const filePath = path.join(__dirname, 'index.html');
     try {
         const content = fs.readFileSync(filePath, 'utf8');
-        if (content.includes('Hello, CI/CD World from GitHub Actions!')) {
+        if (content.includes('Hello, CI/CD World! This is an automatic deployment!')) {
             console.log('Test passed: index.html contains the expected greeting.');
             return true;
         } else {
