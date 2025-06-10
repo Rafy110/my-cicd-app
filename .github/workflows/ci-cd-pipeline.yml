@@ -21,7 +21,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18' # Specify Node.js version
-
+      - name: List files in current directory
+        run: ls -la # For Linux/macOS runner (ubuntu-latest)
+        # For Windows runner, you'd use 'dir'
       - name: Run simple test
         run: node test.js # Execute your test script
 
