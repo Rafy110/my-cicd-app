@@ -16,7 +16,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4 # Get your repository code
-
+      
+      - name: List files in current directory before test
+        run: ls -la # This will show if index.html and test.js are present
+        
       - name: Setup Node.js (for running test.js)
         uses: actions/setup-node@v4
         with:
