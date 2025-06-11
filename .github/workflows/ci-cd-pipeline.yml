@@ -33,10 +33,10 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Reference the secret
         with:
-          projectBaseDir: '.' # Keep this as it's a valid input
+          projectBaseDir: . # Keep this as it's a valid input
           # IMPORTANT: Replace with your actual organization and project keys
           args: >
-            -organization: https://sonarcloud.io/organizations/rafy110/projects
+            -organization: organizations/rafy110
             -projectKey: Rafy110_my-cicd-app
           # Additional parameters (optional, based on your needs)
           # You can specify the analysis scope (e.g., which directories to scan)
