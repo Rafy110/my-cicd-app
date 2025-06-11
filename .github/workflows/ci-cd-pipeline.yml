@@ -3,58 +3,72 @@ name: CI/CD Pipeline for Simple App
 on:
   push:
     branches:
-      - main # Trigger on pushes to the main branch
+      - main
   pull_request:
     branches:
-      - main # Trigger on pull requests to the main branch
+      - main
 
 jobs:
-  # Job 1: Build and Test (Continuous Integration part)
   build-and-test:
-    runs-on: ubuntu-latest # Use a virtual machine with Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 # Get your repository code
-      
-      - name: List files in current directory before test
-        run: ls -la # This will show if index.html and test.js are present
-        
+        uses: actions/checkout@v4
+        with:
+          # Fetch depth 0 ensures full history for accurate SonarCloud analysis (important for "new code" metrics)
+          fetch-depth: 0
+
       - name: Setup Node.js (for running test.js)
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # Specify Node.js version
-      - name: List files in current directory
-        run: ls -la # For Linux/macOS runner (ubuntu-latest)
-        # For Windows runner, you'd use 'dir'
-      - name: Run simple test
-        run: node test.js # Execute your test script
+          node-version: '18'
 
-  # Job 2: Deploy (Continuous Deployment part)
+      - name: Run simple test # Your existing test
+        run: node test.js
+
+      # --- NEW SONARCLOUD SCAN STEP ---
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2.2.0 # Use the official SonarCloud action
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Reference the secret
+        with:
+          # IMPORTANT: Replace with your actual organization and project keys
+          organization: https://sonarcloud.io/organizations/rafy110/projects
+          projectKey: Rafy110_my-cicd-app
+          # Additional parameters (optional, based on your needs)
+          # You can specify the analysis scope (e.g., which directories to scan)
+          # For HTML/JS, it often picks up everything by default, but you could explicitly:
+          # projectBaseDir: '.' # Scan from the root of the repository
+          # sources: 'index.html,test.js,.github/workflows/ci-cd-pipeline.yml' # Or specify files/dirs
+          # exclusions: 'node_modules/**' # Exclude directories if they appear later
+          # projectName: 'My Simple App' # Optional: A friendly name in SonarCloud
+      # --- END NEW SONARCLOUD SCAN STEP ---
+
   deploy:
-    needs: build-and-test # This job only runs if 'build-and-test' job succeeds
-    runs-on: ubuntu-latest # Use a virtual machine with Ubuntu
+    needs: build-and-test
+    runs-on: ubuntu-latest
     environment:
-      name: github-pages # Use the predefined GitHub Pages environment
-      url: ${{ steps.deployment.outputs.page_url }} # The URL where the app will be deployed
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
-    permissions: # Permissions needed for GitHub Pages deployment
+    permissions:
       contents: read
       pages: write
       id-token: write
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 # Get your repository code again
+        uses: actions/checkout@v4
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5 # Configure GitHub Pages environment
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.' # Upload all files in the current directory (your index.html)
+          path: '.'
 
       - name: Deploy to GitHub Pages
-        id: deployment # Give this step an ID to reference its outputs
-        uses: actions/deploy-pages@v4 # Perform the deployment
+        id: deployment
+        uses: actions/deploy-pages@v4
