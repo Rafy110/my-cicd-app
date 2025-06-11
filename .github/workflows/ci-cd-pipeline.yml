@@ -36,8 +36,8 @@ jobs:
           projectBaseDir: . # Keep this as it's a valid input
           # IMPORTANT: Replace with your actual organization and project keys
           args: >
-            -organization: organizations/rafy110
-            -projectKey: Rafy110_my-cicd-app
+            -Dsonar.organization=rafy110
+            -Dsonar.projectKey=Rafy110_my-cicd-app
           # Additional parameters (optional, based on your needs)
           # You can specify the analysis scope (e.g., which directories to scan)
           # For HTML/JS, it often picks up everything by default, but you could explicitly:
